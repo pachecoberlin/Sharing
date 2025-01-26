@@ -17,6 +17,10 @@ import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import de.pacheco.sharing.databinding.ActivityMainBinding
+import org.json.JSONObject
+import java.io.BufferedReader
+import java.io.InputStreamReader
+import java.net.ServerSocket
 
 
 class MainActivity : AppCompatActivity() {
@@ -27,7 +31,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var appBarConfiguration: AppBarConfiguration
     private lateinit var binding: ActivityMainBinding
-    val TAG: String = "PachecoSharingAppMainActivity"
+    val TAG: String = MainActivity::class.java.simpleName
 
     //    override fun onCreate(savedInstanceState: Bundle?) {
 //        super.onCreate(savedInstanceState)
@@ -35,74 +39,42 @@ class MainActivity : AppCompatActivity() {
         super.onResume()
         Log.d(TAG, "intent: $intent")
         val linksharing = intent.getBooleanExtra("linksharing", false)
-        Log.d(TAG, "linksharing: $linksharing")
+        val startDefault=true
+        val testing=true
+        Log.d(TAG, "linksharing: $linksharing; startDefault: $startDefault; testing: $testing")
         if (linksharing) {
             wannaFollowLinkDialog()
-        } else {
-            // Replace with the package name of the app you want to open
-            val packageName = "com.google.android.car.kitchensink"
-            val className = "$packageName.KitchenSink2Activity"
-            val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
-            if (launchIntent != null) {
-//            startActivity(launchIntent)
-            } else {
-                Log.d(TAG, "App not installed")
-            }
-            val intent = Intent()
-            intent.setComponent(ComponentName(packageName, className))
-            Log.d(TAG, "Creating activity")
-            startActivity(intent)
+        }
+        if (startDefault){
+            val serviceIntent = Intent(this, ForegroundService::class.java)
+            startForegroundService(serviceIntent)
+            startKitchenSink()
             finish()
         }
-
-        // Close this app after attempting to open the other app
-
-        /*  Log.d(TAG, "Creating activity")
-          intent.apply {
-              if (action == "de.pacheco.PLAY_SONG") {
-                  Log.d(TAG, "No just playing song and returning")
-                  playSong()
-                  return
-              }
-          }
-
-          if (true) return
-
-
-          super.onCreate(savedInstanceState)
-          binding = ActivityMainBinding.inflate(layoutInflater)
-          setContentView(binding.root)
-          setSupportActionBar(binding.appBarMain.toolbar)
-
-          binding.appBarMain.fab?.setOnClickListener { view ->
-  //            playSong(makeSnack(view, "Playing song on Spotify"))
-              broadcastLinkSharingSong(makeSnack(view, "Broadcast"))
-          }
-          val navHostFragment =
-              (supportFragmentManager.findFragmentById(R.id.nav_host_fragment_content_main) as NavHostFragment?)!!
-          val navController = navHostFragment.navController
-
-          binding.navView?.let {
-              appBarConfiguration = AppBarConfiguration(
-                  setOf(
-                      R.id.nav_transform, R.id.nav_reflow, R.id.nav_slideshow, R.id.nav_settings
-                  ),
-                  binding.drawerLayout
-              )
-              setupActionBarWithNavController(navController, appBarConfiguration)
-              it.setupWithNavController(navController)
-          }
-
-          binding.appBarMain.contentMain.bottomNavView?.let {
-              appBarConfiguration = AppBarConfiguration(
-                  setOf(
-                      R.id.nav_transform, R.id.nav_reflow, R.id.nav_slideshow
-                  )
-              )
-              setupActionBarWithNavController(navController, appBarConfiguration)
-              it.setupWithNavController(navController)
-          }*/
+        if(testing){
+//            val serviceIntent = Intent(this, ForegroundService::class.java)
+//            startForegroundService(serviceIntent)
+//            CoroutineScope(Dispatchers.IO).launch {
+//                startServer()
+//            }
+        }
     }
+
+    private fun startKitchenSink() {
+        val packageName = "com.google.android.car.kitchensink"
+        val className = "$packageName.KitchenSink2Activity"
+        val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
+        if (launchIntent != null) {
+    //            startActivity(launchIntent)
+        } else {
+            Log.d(TAG, "App not installed")
+        }
+        val intent = Intent()
+        intent.setComponent(ComponentName(packageName, className))
+        Log.d(TAG, "Creating activity")
+        startActivity(intent)
+    }
+
     private fun wannaFollowLinkDialog(){
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("You got a Video Recommendation")
