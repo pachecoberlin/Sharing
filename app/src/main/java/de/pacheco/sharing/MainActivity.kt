@@ -5,11 +5,14 @@ import android.content.ComponentName
 import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
+import android.os.Bundle
 import android.os.UserManager
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.view.WindowInsets
+import android.view.WindowInsetsController
 import androidx.appcompat.app.AppCompatActivity
 import androidx.navigation.findNavController
 import androidx.navigation.ui.AppBarConfiguration
@@ -17,10 +20,6 @@ import androidx.navigation.ui.navigateUp
 import com.google.android.material.navigation.NavigationView
 import com.google.android.material.snackbar.Snackbar
 import de.pacheco.sharing.databinding.ActivityMainBinding
-import org.json.JSONObject
-import java.io.BufferedReader
-import java.io.InputStreamReader
-import java.net.ServerSocket
 
 
 class MainActivity : AppCompatActivity() {
@@ -33,39 +32,48 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     val TAG: String = MainActivity::class.java.simpleName
 
-    //    override fun onCreate(savedInstanceState: Bundle?) {
-//        super.onCreate(savedInstanceState)
-    override fun onResume() {
-        super.onResume()
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.black);
+
+        // fullscreen
+        val controller = window.insetsController
+        if (controller != null) {
+            controller.hide(WindowInsets.Type.statusBars() or WindowInsets.Type.navigationBars())
+            controller.systemBarsBehavior =
+                WindowInsetsController.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
+
         Log.d(TAG, "intent: $intent")
         val linksharing = intent.getBooleanExtra("linksharing", false)
-        val startDefault=true
-        val testing=true
+        val startDefault = true
+        val testing = true
         Log.d(TAG, "linksharing: $linksharing; startDefault: $startDefault; testing: $testing")
         if (linksharing) {
             wannaFollowLinkDialog()
-        }
-        if (startDefault){
-            val serviceIntent = Intent(this, ForegroundService::class.java)
-            startForegroundService(serviceIntent)
-            startKitchenSink()
-            finish()
-        }
-        if(testing){
+        } else {
+            if (startDefault) {
+                val serviceIntent = Intent(this, ForegroundService::class.java)
+                startForegroundService(serviceIntent)
+                startKitchenSink()
+                finish()
+            }
+            if (testing) {
 //            val serviceIntent = Intent(this, ForegroundService::class.java)
 //            startForegroundService(serviceIntent)
 //            CoroutineScope(Dispatchers.IO).launch {
 //                startServer()
 //            }
+            }
         }
     }
 
     private fun startKitchenSink() {
         val packageName = "com.google.android.car.kitchensink"
-        val className = "$packageName.KitchenSink2Activity"
+        val className = "$packageName.SharingActivity2"
         val launchIntent = packageManager.getLaunchIntentForPackage(packageName)
         if (launchIntent != null) {
-    //            startActivity(launchIntent)
+            //            startActivity(launchIntent)
         } else {
             Log.d(TAG, "App not installed")
         }
@@ -75,7 +83,7 @@ class MainActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
-    private fun wannaFollowLinkDialog(){
+    private fun wannaFollowLinkDialog() {
         val builder: AlertDialog.Builder = AlertDialog.Builder(this)
         builder.setTitle("You got a Video Recommendation")
             .setMessage("The other user select Big Buck Bunny in the Road Reels app for you")
