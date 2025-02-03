@@ -84,29 +84,32 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun wannaFollowLinkDialog() {
-        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
-        builder.setTitle("You got a Video Recommendation")
-            .setMessage("The other user select Big Buck Bunny in the Road Reels app for you")
-            .setPositiveButton(
-                "Yeah! Let's see!",
-                DialogInterface.OnClickListener { dialog, id ->
-                    dialog.dismiss()
-                    val rrPackageName = "com.example.android.cars.roadreels"
-                    val intent = Intent(Intent.ACTION_VIEW)
-                        .setClassName(rrPackageName, "$rrPackageName.MainActivity")
-                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
-                        .putExtra("detail", true)
-                    startActivity(intent)
-                    finish()
-                })
-            .setNegativeButton(
-                "Don't bother me!",
-                DialogInterface.OnClickListener { dialog, id ->
-                    dialog.dismiss()
-                    finish()
-                })
-        val dialog: AlertDialog = builder.create()
-        dialog.show()
+        val dialogFragment = RecommendationDialog()
+        dialogFragment.show(supportFragmentManager, "RecommendationDialog")
+
+//        val builder: AlertDialog.Builder = AlertDialog.Builder(this)
+//        builder.setTitle("You got a Video Recommendation")
+//            .setMessage("The other user select Big Buck Bunny in the Road Reels app for you")
+//            .setPositiveButton(
+//                "Yeah! Let's see!",
+//                DialogInterface.OnClickListener { dialog, id ->
+//                    dialog.dismiss()
+//                    val rrPackageName = "com.example.android.cars.roadreels"
+//                    val intent = Intent(Intent.ACTION_VIEW)
+//                        .setClassName(rrPackageName, "$rrPackageName.MainActivity")
+//                        .setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+//                        .putExtra("detail", true)
+//                    startActivity(intent)
+//                    finish()
+//                })
+//            .setNegativeButton(
+//                "Don't bother me!",
+//                DialogInterface.OnClickListener { dialog, id ->
+//                    dialog.dismiss()
+//                    finish()
+//                })
+//        val dialog: AlertDialog = builder.create()
+//        dialog.show()
     }
 
     private fun makeSnack(view: View, text: String) =
