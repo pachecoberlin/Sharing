@@ -1,45 +1,46 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:padding="16dp">
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content">
 
     <TextView
         android:id="@+id/dialog_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         android:text="Titel des Dialogs"
-        android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="packed" />
 
-    <TextView
-        android:id="@+id/dialog_message"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nachricht des Dialogs"
-        android:layout_marginTop="8dp" />
+    <ImageButton
+        android:id="@+id/positive_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:padding="16dp"
+        android:src="@drawable/accept"
+        app:layout_constraintEnd_toStartOf="@+id/negative_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/dialog_title" />
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end"
-        android:layout_marginTop="16dp">
+    <ImageButton
+        android:id="@+id/negative_button"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_margin="16dp"
+        android:background="?attr/selectableItemBackground"
+        android:padding="16dp"
+        android:src="@drawable/decline"
+        app:layout_constraintBottom_toBottomOf="@+id/positive_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/positive_button"
+        app:layout_constraintTop_toTopOf="@+id/positive_button" />
 
-        <ImageButton
-            android:id="@+id/positive_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/accept"
-            android:background="?attr/selectableItemBackground" />
-
-        <ImageButton
-            android:id="@+id/negative_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:src="@drawable/decline"
-            android:background="?attr/selectableItemBackground"
-            />
-    </LinearLayout>
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

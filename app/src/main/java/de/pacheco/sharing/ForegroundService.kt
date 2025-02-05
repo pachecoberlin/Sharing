@@ -1,5 +1,6 @@
 package de.pacheco.sharing
 
+import android.R.attr.port
 import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
@@ -19,9 +20,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import org.json.JSONObject
 import java.io.BufferedReader
+import java.io.IOException
 import java.io.InputStreamReader
+import java.net.DatagramSocket
 import java.net.ServerSocket
 import java.util.regex.Pattern
+
 
 class ForegroundService : Service() {
 
@@ -29,7 +33,7 @@ class ForegroundService : Service() {
     private val TAG = ForegroundService::class.java.simpleName
 
     override fun onCreate() {
-        Log.d(TAG,"onCreate")
+        Log.d(TAG, "onCreate")
         super.onCreate()
         createNotificationChannel()
         startForeground(1, createNotification("Server läuft..."))
@@ -43,9 +47,23 @@ class ForegroundService : Service() {
     }
 
     private fun startServer() {
-        val serverSocket = ServerSocket(12345)
+        val port = 12345
+        try {
+            val serverSocket = ServerSocket(port)
+            serverSocket.use { serverSocket1 ->
+                DatagramSocket(port).use { datagramSocket ->
+                    serverSocket1.reuseAddress = true
+                    datagramSocket.reuseAddress = true
+                }
+            }
+            serverSocket
+        } catch (e: IOException) {
+            Log.d(TAG, "Server NOT running, error: $e")
+            return
+        }
+        val serverSocket = ServerSocket(port)
         while (true) {
-            Log.d(TAG,"Server running, waiting for input")
+            Log.d(TAG, "Server running, waiting for input")
             val clientSocket = serverSocket.accept()
             val input = BufferedReader(InputStreamReader(clientSocket.getInputStream()))
             val message = input.readLine()
@@ -55,16 +73,16 @@ class ForegroundService : Service() {
             val text = jsonObject.getString("text")
             val serve = jsonObject.getBoolean("serve")
             val url = extractUrl(text)
-            Log.d(TAG,"Text: $text Aktion: $action, Daten: $data, URL: $url")
-            if (serve){
+            Log.d(TAG, "Text: $text Aktion: $action, Daten: $data, URL: $url")
+            if (serve) {
                 val activityIntent = Intent(Intent.ACTION_VIEW, Uri.parse(url)).apply {
                     flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 }
                 Handler(Looper.getMainLooper()).post {
                     startActivity(activityIntent)
                 }
-            }else{
-                showNotification(text,url)
+            } else {
+                showNotification(text, url)
             }
             clientSocket.close()
         }
@@ -72,8 +90,10 @@ class ForegroundService : Service() {
 
     private fun createNotification(content: String): Notification {
         val notificationIntent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(this, 0, notificationIntent,
-            PendingIntent.FLAG_IMMUTABLE) //Flag wurde mir vorgeschlagen als 0 von Copilot
+        val pendingIntent = PendingIntent.getActivity(
+            this, 0, notificationIntent,
+            PendingIntent.FLAG_IMMUTABLE
+        ) //Flag wurde mir vorgeschlagen als 0 von Copilot
 
         return NotificationCompat.Builder(this, CHANNEL_ID)
             .setContentTitle("Server App")
@@ -101,7 +121,8 @@ class ForegroundService : Service() {
             .setAutoCancel(true)
             .build()
 
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
         notificationManager.notify(2, notification)
     }
 
@@ -116,6 +137,7 @@ class ForegroundService : Service() {
             manager.createNotificationChannel(serviceChannel)
         }
     }
+
     private fun extractUrl(text: String): String? {
         val urlPattern = Pattern.compile(
             "(https?://[\\w-]+(\\.[\\w-]+)+[/#?]?.*)",

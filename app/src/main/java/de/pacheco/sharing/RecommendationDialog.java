@@ -18,8 +18,8 @@ public class RecommendationDialog extends DialogFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.recommendation_dialog, container, false);
-        ((TextView) view.findViewById(R.id.dialog_title)).setText("You got a Video Recommendation");
-        ((TextView) view.findViewById(R.id.dialog_message)).setText("The other user select Big Buck Bunny in the Road Reels app for you");
+//        ((TextView) view.findViewById(R.id.dialog_title)).setText("You got a Link Recommendation");
+        ((TextView) view.findViewById(R.id.dialog_title)).setText("Driver recommends to watch Big Buck Bunny");
         ImageButton positiveButton = view.findViewById(R.id.positive_button);
         ImageButton negativeButton = view.findViewById(R.id.negative_button);
 
